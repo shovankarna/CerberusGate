@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  gateway_8069:
+    image: spring-cloud-gateway:latest
+    container_name: gateway_8069
+    volumes:
+      - /opt/cloud-gateway:/opt/cloud-gateway
+    network_mode: host
+    environment:
+      - SERVER_PORT=8069
+    restart: unless-stopped
+    
+  gateway_8070:
+    image: spring-cloud-gateway:latest
+    container_name: gateway_8070
+    volumes:
+      - /opt/cloud-gateway:/opt/cloud-gateway
+    network_mode: host
+    environment:
+      - SERVER_PORT=8070
+    restart: unless-stopped
+    depends_on:
+      gateway_8069:
+        condition: service_started
+
+  gateway_8071:
+    image: spring-cloud-gateway:latest
+    container_name: gateway_8071
+    volumes:
+      - /opt/cloud-gateway:/opt/cloud-gateway
+    network_mode: host
+    environment:
+      - SERVER_PORT=8071
+    restart: unless-stopped
+    depends_on:
+      gateway_8070:
+        condition: service_started
+
+  gateway_8072:
+    image: spring-cloud-gateway:latest
+    container_name: gateway_8072
+    volumes:
+      - /opt/cloud-gateway:/opt/cloud-gateway
+    network_mode: host
+    environment:
+      - SERVER_PORT=8072
+    restart: unless-stopped
+    depends_on:
+      gateway_8071:
+        condition: service_started

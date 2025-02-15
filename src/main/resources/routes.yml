@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: open_route_1
+          uri: http://myip:8080
+          predicates:
+            - Path=/myip/public/**
+
+        - id: secured_route_1
+          uri: http://myip:8080
+          predicates:
+            - Path=/myip/api/user/**, /myip/api/admin/**,
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles:
+                - ADMIN
+                - USER
+              rateLimit:
+                enabled: false
+                capacity: 3
+                refillTokens: 3
+                refillPeriod: 60
+                refillUnit: SECONDS
