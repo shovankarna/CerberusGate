@@ -2,24 +2,217 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: open_route_1
-          uri: http://myip:8080
-          predicates:
-            - Path=/myip/public/**
 
-        - id: secured_route_1
-          uri: http://myip:8080
+        # ------------------- PUBLIC Routes -------------------
+        - id: server1_public
+          uri: http://localhost:8081
           predicates:
-            - Path=/myip/api/user/**, /myip/api/admin/**,
+            - Path=/server1/public/**
+          metadata:
+            securityConfig:
+              isSecured: false
+              roles: []
+              customProvider: null
+              rateLimit:
+                enabled: false
+                capacity: 0
+                refillTokens: 0
+                refillPeriod: 0
+                refillUnit: SECONDS
+                keyStrategy: null
+
+        - id: server2_public
+          uri: http://localhost:8082
+          predicates:
+            - Path=/server2/public/**
+          metadata:
+            securityConfig:
+              isSecured: false
+              roles: []
+              customProvider: null
+              rateLimit:
+                enabled: false
+                capacity: 0
+                refillTokens: 0
+                refillPeriod: 0
+                refillUnit: SECONDS
+                keyStrategy: null
+
+        - id: server3_public
+          uri: http://localhost:8083
+          predicates:
+            - Path=/server3/public/**
+          metadata:
+            securityConfig:
+              isSecured: false
+              roles: []
+              customProvider: null
+              rateLimit:
+                enabled: false
+                capacity: 0
+                refillTokens: 0
+                refillPeriod: 0
+                refillUnit: SECONDS
+                keyStrategy: null
+
+        # ------------------- SECURED (Any Authenticated User) -------------------
+        - id: server1_secure
+          uri: http://localhost:8081
+          predicates:
+            - Path=/server1/api/secure/**
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles: []
+              customProvider: keycloak
+              rateLimit:
+                enabled: true
+                capacity: 10
+                refillTokens: 10
+                refillPeriod: 60
+                refillUnit: SECONDS
+                keyStrategy: user
+
+        - id: server2_secure
+          uri: http://localhost:8082
+          predicates:
+            - Path=/server2/api/secure/**
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles: []
+              customProvider: keycloak
+              rateLimit:
+                enabled: true
+                capacity: 10
+                refillTokens: 10
+                refillPeriod: 60
+                refillUnit: SECONDS
+                keyStrategy: user
+
+        - id: server3_secure
+          uri: http://localhost:8083
+          predicates:
+            - Path=/server3/api/secure/**
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles: []
+              customProvider: keycloak
+              rateLimit:
+                enabled: true
+                capacity: 10
+                refillTokens: 10
+                refillPeriod: 60
+                refillUnit: SECONDS
+                keyStrategy: user
+
+        # ------------------- ROLE-BASED Routes -------------------
+
+        - id: server1_user_route
+          uri: http://localhost:8081
+          predicates:
+            - Path=/server1/api/user/**
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles:
+                - USER
+              customProvider: keycloak
+              rateLimit:
+                enabled: true
+                capacity: 5
+                refillTokens: 5
+                refillPeriod: 30
+                refillUnit: SECONDS
+                keyStrategy: user
+
+        - id: server1_admin_route
+          uri: http://localhost:8081
+          predicates:
+            - Path=/server1/api/admin/**
           metadata:
             securityConfig:
               isSecured: true
               roles:
                 - ADMIN
-                - USER
+              customProvider: keycloak
               rateLimit:
                 enabled: false
                 capacity: 3
                 refillTokens: 3
-                refillPeriod: 60
+                refillPeriod: 30
                 refillUnit: SECONDS
+                keyStrategy: ip
+
+        - id: server2_user_route
+          uri: http://localhost:8082
+          predicates:
+            - Path=/server2/api/user/**
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles:
+                - USER
+              customProvider: keycloak
+              rateLimit:
+                enabled: true
+                capacity: 5
+                refillTokens: 5
+                refillPeriod: 30
+                refillUnit: SECONDS
+                keyStrategy: user
+
+        - id: server2_admin_route
+          uri: http://localhost:8082
+          predicates:
+            - Path=/server2/api/admin/**
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles:
+                - ADMIN
+              customProvider: keycloak
+              rateLimit:
+                enabled: true
+                capacity: 3
+                refillTokens: 3
+                refillPeriod: 30
+                refillUnit: SECONDS
+                keyStrategy: ip
+
+        - id: server3_user_route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/server3/api/user/**
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles:
+                - USER
+              customProvider: keycloak
+              rateLimit:
+                enabled: true
+                capacity: 5
+                refillTokens: 5
+                refillPeriod: 30
+                refillUnit: SECONDS
+                keyStrategy: user
+
+        - id: server3_admin_route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/server3/api/admin/**
+          metadata:
+            securityConfig:
+              isSecured: true
+              roles:
+                - ADMIN
+              customProvider: keycloak
+              rateLimit:
+                enabled: true
+                capacity: 3
+                refillTokens: 3
+                refillPeriod: 30
+                refillUnit: SECONDS
+                keyStrategy: ip

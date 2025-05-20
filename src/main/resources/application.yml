@@ -1,44 +1,56 @@
 server:
   port: 8069
+
 spring:
-  main:
-    web-application-type: reactive
-    # allow-bean-definition-overriding: true
   application:
     name: api-gateway
+  main:
+    web-application-type: reactive
   profiles:
     active: native
   config:
     import:
-      # - optional:/opt/cloud-gateway/routes.yml 
-      - classpath:/routes.yml # Import the new routes.yml here
+      - classpath:/routes.yml # External route configuration
 
   cloud:
-    config:
-      server:
-        git:
-          default-label: main
     compatibility-verifier:
       enabled: false
+
     gateway:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
       globalcors:
         corsConfigurations:
-          '[/**]':
-            allowedOrigins: "http://myip"
+          "[/**]":
+            allowedOrigins: "http://your-frontend-ip-or-domain"
             allowedMethods:
               - GET
               - POST
+              - PUT
+              - DELETE
               - OPTIONS
             allowedHeaders: "*"
             exposedHeaders: "*"
             allowCredentials: true
             maxAge: 3600
 
-######### ADD THE BASE URL OF YOUR KEYCLOAK HOSTED SERVER(PRIVATE IP) FOR INTERNAL COMMUNICATION
-keycloak:
-  base-url: http://keyclaokip:8080
+######### JWT Configuration for Generic Token Extractor & Verifier #########
+jwt:
+  jwks-uri: http://localhost:8080/realms/demo-realm/protocol/openid-connect/certs
+  claims:
+    user-id: sub # JWT claim to use for user ID
+    roles: resource_access.spring-client.roles # JWT claim to use for roles
+
+######### Gateway Custom Properties #########
+gateway:
+  route-cache-refresh-interval-ms: 60000 # 60 seconds
+  rate-limit:
+    default-capacity: 5
+    default-refill-tokens: 5
+    default-refill-period: 60
+    default-refill-unit: SECONDS
+    default-key-strategy: ip+path
+
 
 management:
   endpoints:
@@ -50,6 +62,7 @@ management:
       enabled: true
 
 
-# spring:
-#   config:
-#     import: optional:file:/opt/cloud-gateway/application-external.yml
+# logging:
+#   level:
+#     root: INFO
+#     org.springframework.boot.autoconfigure: DEBUG
